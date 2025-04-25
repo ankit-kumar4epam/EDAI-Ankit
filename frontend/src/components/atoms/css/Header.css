@@ -73,6 +73,15 @@
   .dropdown-overlay li:hover {
     background-color: rgba(0, 0, 0, 0.05);
   }
+
+  .username{
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+#user-image{
+    border-radius: 50%;
+}
 @media screen and (max-width:500px){
     .middle-navbar{
         display: none;

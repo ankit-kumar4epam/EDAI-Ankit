@@ -5,17 +5,28 @@ import Cars from "./components/organisms/Cars";
 import Signup from "./components/organisms/Signup";
 import Login from "./components/organisms/Login";
 import CarSelection from "./components/organisms/CarSelection";
+import { AuthProvider } from "./context/auth/AuthContext";
+import MyBookings from "./components/organisms/MyBookings";
 
 function App() {
+  const successAlert = {
+    type: "success",
+    heading: "Success!",
+    message: "Your operation was completed successfully.",
+    description: "You can now safely close this notification.",
+  };
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/cars" element={<Cars />} />
-        <Route path="/cars/car-info" element={<CarSelection />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/cars" element={<Cars />} />
+          <Route path="/cars/car-info" element={<CarSelection />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

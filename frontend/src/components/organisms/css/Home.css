@@ -6,7 +6,7 @@
 }
 
 .subheadings{
-    margin: 1rem 0px;
+    margin-bottom: 1rem;
     font-size: 18px;
     color: #666666;
 }
@@ -23,8 +23,108 @@
     text-align: right;
     margin: 0.7 5rem 0px;
 }
+
+/* ABOUT US */
 #about-us
 {
     display: grid;
     grid-template-columns: repeat(3,1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 15%;
+}
+#about-subhead{
+    grid-row: span 2;
+}
+
+/* MAPS*/
+
+#map
+{
+
+}
+.map-container
+{
+    /* border: 2px solid red; */
+    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+
+}
+.map-locations
+{
+    /* border: 2px solid green; */
+    grid-column: span 1;
+}
+.map-item
+{
+    /* background-color: pink; */
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #DCDCDD;
+}
+.map-item:hover{
+    border-radius: 4px;
+    background-color: black;
+    cursor: pointer;
+    color: white;
+}
+.map-item:hover *{
+    color: white;
+}
+.map-location-place
+{
+    font-size: 20px;
+    font-weight: bold;
+}
+.map-location-description
+{
+    font-size: 14px;
+    color: #666666;
+
+}
+.map-box
+{
+    grid-column: span 2;
+    /* border: 2px solid blue; */
+}
+#map-view
+{
+
+}
+
+
+
+/* MEDIA Query */
+@media screen and (max-width: 640px) {
+    .popularCars{
+        display: grid;
+        /* border: 2px solid red; */
+        grid-template-columns: repeat(1,1fr);
+        gap: 20px;
+        margin: 8px 0px;
+    }
+    #about-us
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }    
+}
+@media screen and (min-width: 641px) and (max-width: 768px) {
+    .popularCars{
+        display: grid;
+        /* border: 2px solid red; */
+        grid-template-columns: repeat(2,1fr);
+        gap: 20px;
+        margin: 8px 0px;
+    }
+}
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .popularCars{
+        display: grid;
+        /* border: 2px solid red; */
+        grid-template-columns: repeat(3,1fr);
+        gap: 20px;
+        margin: 8px 0px;
+    }
 }

@@ -7,7 +7,7 @@
   .input-box {
     padding: 0.5rem;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
     margin: 0.3rem 0rem;
   }
   
@@ -18,7 +18,7 @@
   }
   
   .error-text {
-    color: red;
+    color: #E22D0D;
     font-size: 0.7rem;
     margin-top: 0.25rem;
   }

@@ -2,22 +2,35 @@ import React from "react";
 import SecInputBtn from "./SecInputBtn";
 import { Link } from "react-router-dom";
 import "./css/Cards.css";
-const Cards = () => {
+
+interface TypeProps {
+  carRating: string;
+  model: string;
+  img: string;
+  location: string;
+  status: string;
+  pricePerDay: number;
+}
+const Cards: React.FC<TypeProps> = ({
+  carRating,
+  model,
+  img,
+  location,
+  status,
+  pricePerDay,
+}) => {
   return (
     <div className="cards" id="card1">
       <div className="cars_image">
-        <img
-          src="https://s3-alpha-sig.figma.com/img/d6ca/df69/abaac1477c2b308768ba5ace793e6d4e?Expires=1746403200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=TxDprSdi-8pDvz1x~GxVCe~0biTf0vJyVQQIEpu1uheTIh5DIPeabN0Zwl1MCGxqwku1dLVGyuFXEqRWbEIr2agzMi4Y9mUSM6j6CK5kgqwr3SAS1wiN9~JFTabbaebxdyacF4BRfxglN9outBeX~chkjDwiXibvb3ZhMcb7RfyHWHZmjGxnih82AaOgt640IuSTqZonGHWqAvh5lwFSkDW-ThJcz6CTRYVzkBKbchuUEtnOA88UzTlRnV5YbYFqUV-hG6Lf-nVfFFDQO~GMZP20vdPb5LZ71btNiTWzD8jAk3wLrADjY4VF93sQFPwNT323q--9C67raQLiz~6TbA"
-          alt=""
-        />
-        <div className="car_status">Available</div>
+        <img src={img} alt={model} />
+        <div className="car_status">{status}</div>
       </div>
       <div id="car_details">
         <Link to="/cars/car-info" className="no-underline text-black">
-          <div className="car_name hover-bold">Nissan Z 2024</div>
+          <div className="car_name hover-bold">{model}</div>
         </Link>
         <div className="car_rating hover-bold">
-          4.8
+          {carRating}
           <svg
             width="10"
             height="10"
@@ -32,9 +45,9 @@ const Cards = () => {
           </svg>
         </div>
       </div>
-      <div className="car_location">Ukraine. Kyiv</div>
+      <div className="car_location">{location}</div>
 
-      <SecInputBtn value="Book the Car - $550/day" />
+      <SecInputBtn value={`Book the Car - ${pricePerDay}/day`} />
       <div id="see-more-details">
         <Link to="/cars/car-info" className="text-black hover-bold">
           See more details

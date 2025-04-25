@@ -2,7 +2,13 @@ import React from "react";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import "./css/Header.css";
+import { useAuth } from "../../context/auth/useAuth";
 const Header = () => {
+  const { user, logout } = useAuth();
+  // console.log(user);
+  const handleLogout = () => {
+    logout();
+  };
   const [isOpen, setIsOpen] = useState(false);
   const toggleHamburg = () => {
     setIsOpen(!isOpen);
@@ -45,13 +51,37 @@ const Header = () => {
               Cars
             </NavLink>
           </li>
+          {user && (
+            <li className="list-item">
+              <NavLink
+                to="/my-bookings"
+                className={({ isActive }) => (isActive ? "active-navbtn" : "")}
+              >
+                My Bookings
+              </NavLink>
+            </li>
+          )}
         </ul>
       </div>
       <div className="right-navbar">
         <ul>
           <li className="list-item">
             {" "}
-            <Link to="/login">Log in</Link>
+            {!user ? (
+              <Link to="/login">Log in</Link>
+            ) : (
+              <>
+                <div className="username">
+                  <img
+                    src="https://picsum.photos/25"
+                    id="user-image"
+                    alt="user"
+                  />
+                  Hello, {user.username} {`(${user.role})`}
+                </div>
+                <div onClick={handleLogout}>Log Out</div>
+              </>
+            )}
           </li>
           <li className="list-item">
             <select>
@@ -85,7 +115,8 @@ const Header = () => {
               <Link to="/cars"> Cars</Link>
             </li>
             <li className="list-item">
-              <Link to="/login"> Log in</Link>
+              {!user && <Link to="/login"> Log in</Link>}
+              {user && <div>Hello {user.username}</div>}
             </li>
           </ul>
         )}

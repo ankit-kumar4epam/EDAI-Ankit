@@ -7,6 +7,7 @@ interface InputProps {
   label_head: string;
   type?: string;
   error_message?: string;
+  border?: string;
   name: string;
   id?: string;
   value?: string;
@@ -18,6 +19,7 @@ const Input: React.FC<InputProps> = ({
   label_head,
   type = "text",
   error_message = "",
+  border = "gray",
   name,
   id,
   value,
@@ -28,6 +30,7 @@ const Input: React.FC<InputProps> = ({
     <div className="input-container" style={{ width }}>
       <label htmlFor={id || name}>{label_head}</label>
       <input
+        style={{ border: `1px solid ${border}` }}
         type={type}
         id={id || name}
         name={name}
