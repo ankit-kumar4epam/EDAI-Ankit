@@ -1,0 +1,170 @@
+[
+  {
+    "id": "1906b7f4-a871-4874-94e4-17f2f48ef90f",
+    "email": "amiya_maity@example.com",
+    "firstName": "Amiya",
+    "lastName": "Maity",
+    "password": "abcd1234",
+    "role": "Client"
+  },
+  {
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "email": "john_smith@example.com",
+    "firstName": "John",
+    "lastName": "Smith",
+    "password": "&Q5m#9bX^d8!FwZ2",
+    "role": "Client"
+  },
+  {
+    "id": "7e2068f9-13c4-48a4-82fa-1538bc9ebcc8",
+    "email": "rachael_green@example.com",
+    "firstName": "Rachael",
+    "lastName": "Green",
+    "password": "password123",
+    "role": "Client"
+  },
+  {
+    "id": "7324c87f-6dcb-4329-af47-8398ef9bd765",
+    "email": "george_brown@example.com",
+    "firstName": "George",
+    "lastName": "Brown",
+    "password": "G!o7&Hg3712xM%",
+    "role": "Admin"
+  },
+  {
+    "id": "0fa804c2-41e3-43ed-ae7d-8e09b1f3ac5e",
+    "email": "emma_watson@example.com",
+    "firstName": "Emma",
+    "lastName": "Watson",
+    "password": "EmW2023@pass",
+    "role": "Client"
+  },
+  {
+    "id": "41132312-6e84-49a6-904f-ff51bc5c8ec3",
+    "email": "liam_charles@example.com",
+    "firstName": "Liam",
+    "lastName": "Charles",
+    "password": "Liam$456!",
+    "role": "Client"
+  },
+  {
+    "id": "8471b091-28c6-42e6-b902-5ff63eb96b0a",
+    "email": "hannah_davis@example.com",
+    "firstName": "Hannah",
+    "lastName": "Davis",
+    "password": "hdSuperSecure99",
+    "role": "Client"
+  },
+  {
+    "id": "c01abcd1-de34-4c21-9afe-1258fd7e3145",
+    "email": "robert_williams@example.com",
+    "firstName": "Robert",
+    "lastName": "Williams",
+    "password": "password!112233",
+    "role": "Admin"
+  },
+  {
+    "id": "4d90e23a-1e67-4cd9-a115-abcdef12345",
+    "email": "sophia_jones@example.com",
+    "firstName": "Sophia",
+    "lastName": "Jones",
+    "password": "SophiaSecure999",
+    "role": "Client"
+  },
+  {
+    "id": "5df2f319-df8b-421c-a2ef-1298123c431f",
+    "email": "daniel_miller@example.com",
+    "firstName": "Daniel",
+    "lastName": "Miller",
+    "password": "D$3nmL8x#Y%",
+    "role": "Client"
+  },
+  {
+    "id": "1c62adf4-97be-472a-8ae4-12a504d3198e",
+    "email": "olivia_thompson@example.com",
+    "firstName": "Olivia",
+    "lastName": "Thompson",
+    "password": "OliviaPass555",
+    "role": "Client"
+  },
+  {
+    "id": "771c6b95-0f5e-4744-ad04-4cb9cf84b6a3",
+    "email": "charlie_adams@example.com",
+    "firstName": "Charlie",
+    "lastName": "Adams",
+    "password": "@Charlie2023!",
+    "role": "Admin"
+  },
+  {
+    "id": "8332adf4-871c-494e-8dfe-b123f05d903b",
+    "email": "mia_white@example.com",
+    "firstName": "Mia",
+    "lastName": "White",
+    "password": "MWhite_Secure!",
+    "role": "Client"
+  },
+  {
+    "id": "9932b6f1-450c-48e4-a91b-cf839b42ed7a",
+    "email": "lucas_clark@example.com",
+    "firstName": "Lucas",
+    "lastName": "Clark",
+    "password": "Lclark2023!#",
+    "role": "Client"
+  },
+  {
+    "id": "a732fd91-62ce-498d-869f-02843f29d20b",
+    "email": "ava_wilson@example.com",
+    "firstName": "Ava",
+    "lastName": "Wilson",
+    "password": "AvaW@Secure&",
+    "role": "Client"
+  },
+  {
+    "id": "7218fd32-bc64-4cae-b3d1-cd0252a3126f",
+    "email": "mark_taylor@example.com",
+    "firstName": "Mark",
+    "lastName": "Taylor",
+    "password": "@Taylor$Admin",
+    "role": "Admin"
+  },
+  {
+    "id": "0338421c-990a-4a73-ae32-bfc52a24d10f",
+    "email": "lily_hall@example.com",
+    "firstName": "Lily",
+    "lastName": "Hall",
+    "password": "$Lily567!",
+    "role": "Client"
+  },
+  {
+    "id": "1986bf33-867b-4a59-80d1-ed684fa69231",
+    "email": "ethan_evans@example.com",
+    "firstName": "Ethan",
+    "lastName": "Evans",
+    "password": "E&E@Secure!",
+    "role": "Client"
+  },
+  {
+    "id": "8c321235-ba74-4ca4-b113-b09d23eab1cf",
+    "email": "isabella_wright@example.com",
+    "firstName": "Isabella",
+    "lastName": "Wright",
+    "password": "Izzy123!Secure",
+    "role": "Client"
+  },
+  {
+    "id": "109f82bc-a930-40eb-8c5e-ad84a50c4593",
+    "email": "grace_edwards@example.com",
+    "firstName": "Grace",
+    "lastName": "Edwards",
+    "password": "GraceSecure&22",
+    "role": "Client"
+  },
+  {
+    "id": "ae7497e4-baea-41f5-beaa-ffad03ecc427",
+    "email": "ankit_kumar4@epam.com",
+    "firstName": "ANKIT",
+    "lastName": "KUMAR",
+    "password": "12345Ankit",
+    "role": "Client"
+  }
+]

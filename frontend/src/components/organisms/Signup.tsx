@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./css/Signup.css";
+
+import authImage from "../../assets/authorization.png";
 import Input from "../atoms/Authentication/Input";
+import PasswordInput from "../atoms/Authentication/PasswordInput";
 import RedInputBtn from "../atoms/RedInputBtn";
 import SecInputBtn from "../atoms/SecInputBtn";
-import PasswordInput from "../atoms/Authentication/PasswordInput";
-import SuccessAlert from "../atoms/SuccessAlert";
-import ImageAuth from "../atoms/Authentication/ImageAuth";
+
+import "./css/Signup.css";
+import { useAlert } from "../../context/alert/useAlert";
+import AlertBox from "../../context/alert/AlertBox";
 
 interface UserData {
   firstName: string;
@@ -17,252 +20,194 @@ interface UserData {
   confirmPassword: string;
 }
 
-interface ErrorMessages {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
+interface ErrorFields {
+  [key: string]: string;
 }
-interface BorderColor {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+
+const initialUserData: UserData = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
+const initialErrorState: ErrorFields = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
 
 const Signup: React.FC = () => {
-  const [userData, setUserData] = useState<UserData>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [userData, setUserData] = useState<UserData>(initialUserData);
+  const [errors, setErrors] = useState<ErrorFields>({});
+  const [borderColors, setBorderColors] = useState<ErrorFields>({});
+  const [loading, setLoading] = useState(false);
 
-  const [errorMessage, setErrorMessage] = useState<ErrorMessages>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [borderColor, setBorderColor] = useState<BorderColor>({
-    firstName: "gray",
-    lastName: "gray",
-    email: "gray",
-    password: "gray",
-    confirmPassword: "gray",
-  });
-
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const navigate = useNavigate();
+  const { showAlert, alert } = useAlert();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUserData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+    setBorderColors((prev) => ({ ...prev, [name]: "gray" }));
   };
-  let flagErr: boolean = false;
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
 
-    // Basic validations
+  const validate = () => {
+    const newErrors: ErrorFields = {};
     const nameRegex = /^[A-Za-z]+$/;
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-    // Reset errors
-    setErrorMessage({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
-    setBorderColor({
-      firstName: "black",
-      lastName: "black",
-      email: "black",
-      password: "black",
-      confirmPassword: "black",
-    });
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).*$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    flagErr = false;
     if (!userData.firstName || !nameRegex.test(userData.firstName)) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        firstName: userData.firstName
-          ? "Only Latin letters are allowed"
-          : "First Name is required",
-      }));
-      setBorderColor((prev) => ({
-        ...prev,
-        firstName: "red",
-      }));
-      flagErr = true;
+      newErrors.firstName = userData.firstName
+        ? "Only Latin letters are allowed"
+        : "Name is required";
     }
 
-    if (!userData.lastName || !nameRegex.test(userData.lastName)) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        lastName: userData.lastName
-          ? "Only Latin letters are allowed"
-          : "Last Name is required",
-      }));
-      setBorderColor((prev) => ({
-        ...prev,
-        lastName: "red",
-      }));
+    if (userData.lastName && !nameRegex.test(userData.lastName)) {
+      newErrors.lastName = "Only Latin letters are allowed";
+    }
 
-      flagErr = true;
+    if (!userData.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(userData.email)) {
+      newErrors.email = "Enter a valid email address";
     }
 
     if (userData.password.length < 8) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        password: "Password should contain at least 8 characters.",
-      }));
-      setBorderColor((prev) => ({
-        ...prev,
-        password: "red",
-      }));
-      flagErr = true;
-    }
-
-    if (!passwordRegex.test(userData.password)) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        password:
-          "Password must contain at least one uppercase letter and one digit.",
-      }));
-      setBorderColor((prev) => ({
-        ...prev,
-        password: "red",
-      }));
-      flagErr = true;
+      newErrors.password = "Password must be at least 8 characters";
+    } else if (!passwordRegex.test(userData.password)) {
+      newErrors.password =
+        "Password should contain at least one capital letter";
     }
 
     if (userData.password !== userData.confirmPassword) {
-      setErrorMessage((prev) => ({
-        ...prev,
-        confirmPassword: "Passwords do not match.",
-      }));
-      setBorderColor((prev) => ({
-        ...prev,
-        confirmPassword: "red",
-      }));
-      flagErr = true;
+      newErrors.confirmPassword = "Passwords should match";
     }
-    if (flagErr) {
-      return;
-    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleCancel = () => {
+    setUserData(initialUserData);
+    setErrors(initialErrorState);
+    // setBorderColors({});
+    window.location.reload();
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      // console.log("Requesting");
-      const response = await axios.post(
-        "https://car-rental-server-vh0t.onrender.com/api/v1/auth/sign-up",
-        {
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          email: userData.email,
-          password: userData.password,
-        }
+      if (!validate()) return;
+
+      const usersDataKey = "usersData";
+      const existingUsers = JSON.parse(
+        localStorage.getItem(usersDataKey) || "[]"
       );
-      setShowSuccessAlert(true);
+      const emailExists = existingUsers.some(
+        (user: { email: string }) => user.email === userData.email.toLowerCase()
+      );
 
-      // alert("Signed up successfully!");
+      if (emailExists) {
+        setErrors({ email: "This email is already registered" });
+        return;
+      }
+      setLoading(true);
+      const newUser = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email.toLowerCase(),
+        password: userData.password,
+      };
+      const updatedUsers = [...existingUsers, newUser];
 
-      setUserData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
+      localStorage.setItem(usersDataKey, JSON.stringify(updatedUsers));
+      setTimeout(() => {
+        setLoading(false);
+        navigate("/login", {
+          state: {
+            alertType: "success",
+            alertTitle: "Congratulations!",
+            alertDescription: "You have successfully created your account!",
+          },
+        });
+      }, 2000);
 
-      // setTimeout(() => {
-      //   setShowSuccessAlert(false);
-      //   navigate("/login");
-      // }, 1000);
+      // Step 7: Reset form to initial state
+      setUserData(initialUserData);
     } catch (err: any) {
-      if (err.response?.status === 400 || err.response?.status === 409) {
-        setErrorMessage((prev) => ({
-          ...prev,
-          email: "This email is already registered.",
-        }));
-        setBorderColor((prev) => ({
-          ...prev,
-          email: "red",
-        }));
+      if (err.response?.status === 409 || err.response?.status === 400) {
+        setErrors({ email: "This email is already registered" });
       } else {
-        alert("An error occurred during registration.");
-        console.error(err);
+        showAlert(
+          "error",
+          "Error!",
+          "Registration failed. Please try again later."
+        );
+        console.error("Signup error:", err);
       }
     }
   };
-
   return (
     <div id="signup">
-      <ImageAuth />
+      <div className="signup-left">
+        <img src={authImage} alt="Authorization" id="signup-cars" />
+      </div>
 
       <div className="signup-right">
-        {showSuccessAlert && (
-          <SuccessAlert
-            id="alertbox"
-            message="Congratulations!"
-            description="You have successfully created your account!"
-          />
-        )}
-        <div id="head-create-account">Create an account</div>
+        {alert && <AlertBox alert={alert} />}
+        <div id="head-create-account">Create an Account</div>
         <p className="text">Enter your details below to get started</p>
+
         <form onSubmit={handleSubmit} id="signup-form">
           <div className="form-group">
             <Input
               width="50%"
               label_head="Name"
-              type="text"
-              error_message={errorMessage.firstName}
-              border={borderColor.firstName}
               name="firstName"
-              id="f_name"
               value={userData.firstName}
               onChange={handleChange}
+              error_message={errors.firstName || ""}
+              border={errors.firstName ? "red" : "gray"}
               placeholder="Write your name"
             />
             <Input
               width="50%"
               label_head="Surname"
-              type="text"
-              error_message={errorMessage.lastName}
-              border={borderColor.lastName}
               name="lastName"
-              id="l_name"
               value={userData.lastName}
               onChange={handleChange}
+              error_message={errors.lastName || ""}
+              border={errors.lastName ? "red" : "gray"}
               placeholder="Write your surname"
             />
           </div>
 
           <Input
             label_head="Email"
-            type="email"
             name="email"
-            error_message={errorMessage.email}
-            border={borderColor.email}
-            onChange={handleChange}
             value={userData.email}
+            onChange={handleChange}
+            error_message={errors.email || ""}
+            border={errors.email ? "red" : "gray"}
             placeholder="Write your email"
           />
 
           <PasswordInput
             label_head="Password"
-            type="password"
             name="password"
-            error_message={errorMessage.password}
-            border={borderColor.password}
-            onChange={handleChange}
             value={userData.password}
+            onChange={handleChange}
+            error_message={errors.password || ""}
+            border={errors.password ? "red" : "gray"}
             placeholder="Create password"
           />
 
-          {!flagErr && (
+          {!errors.password && (
             <div className="text">
               Minimum 8 characters with at least one capital letter and one
               digit
@@ -270,19 +215,24 @@ const Signup: React.FC = () => {
           )}
 
           <PasswordInput
-            label_head="Confirm Password"
-            type="password"
+            label_head="Password"
             name="confirmPassword"
-            error_message={errorMessage.confirmPassword}
-            border={borderColor.confirmPassword}
-            onChange={handleChange}
             value={userData.confirmPassword}
+            onChange={handleChange}
+            error_message={errors.confirmPassword || ""}
+            border={errors.confirmPassword ? "red" : "gray"}
             placeholder="Confirm password"
           />
 
           <div className="form-group">
-            <SecInputBtn value="Cancel" />
-            <RedInputBtn value="Register" type="submit" />
+            <SecInputBtn value="Cancel" onClick={handleCancel} />
+            <RedInputBtn type="submit" disabled={loading}>
+              {loading ? (
+                <span className="loading-text">Loading</span>
+              ) : (
+                "Register"
+              )}
+            </RedInputBtn>
           </div>
 
           <div id="login-btn">

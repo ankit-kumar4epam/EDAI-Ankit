@@ -1,17 +1,27 @@
 import React from "react";
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import "./css/Header.css";
 import { useAuth } from "../../context/auth/useAuth";
 const Header = () => {
   const { user, logout } = useAuth();
   // console.log(user);
+  const navigate = useNavigate();
   const handleLogout = () => {
-    logout();
+    setLogoutVar("Logging Out...");
+    setTimeout(() => {
+      logout();
+      navigate("/");
+    }, 1000);
   };
   const [isOpen, setIsOpen] = useState(false);
+  const [isUser, setIsUser] = useState(false);
+  const [logoutVar, setLogoutVar] = useState("Log Out");
   const toggleHamburg = () => {
     setIsOpen(!isOpen);
+  };
+  const toggleUserDropdown = () => {
+    setIsUser(!isUser);
   };
   return (
     <div className="navbar">
@@ -66,23 +76,30 @@ const Header = () => {
       <div className="right-navbar">
         <ul>
           <li className="list-item">
-            {" "}
             {!user ? (
               <Link to="/login">Log in</Link>
             ) : (
               <>
-                <div className="username">
+                <div className="username" onClick={toggleUserDropdown}>
                   <img
                     src="https://picsum.photos/25"
                     id="user-image"
                     alt="user"
                   />
                   Hello, {user.username} {`(${user.role})`}
+                  <div className={`dropdown ${isUser ? "drop-visible" : ""}`}>
+                    <div className="dropdown-content">
+                      <Link to="my-profile"> My Profile</Link>
+                    </div>
+                    <div className="dropdown-content">
+                      <div onClick={handleLogout}>{logoutVar}</div>
+                    </div>
+                  </div>
                 </div>
-                <div onClick={handleLogout}>Log Out</div>
               </>
             )}
           </li>
+
           <li className="list-item">
             <select>
               <option value="English" selected>
@@ -117,6 +134,9 @@ const Header = () => {
             <li className="list-item">
               {!user && <Link to="/login"> Log in</Link>}
               {user && <div>Hello {user.username}</div>}
+            </li>
+            <li className="list-item">
+              {user && <div onClick={handleLogout}>Log Out</div>}
             </li>
           </ul>
         )}

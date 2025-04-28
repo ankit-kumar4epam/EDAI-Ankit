@@ -1,0 +1,13 @@
+#carspage{
+    padding: 11px;
+    background-color: #FFFBF3;
+}
+#carspage section{
+    margin: 4rem 0px;
+}
+
+.subheadings{
+    margin-bottom: 1rem;
+    font-size: 18px;
+    color: #666666;
+}

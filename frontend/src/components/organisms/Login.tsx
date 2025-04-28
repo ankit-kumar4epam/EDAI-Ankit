@@ -1,17 +1,22 @@
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import ImageAuth from "../atoms/Authentication/ImageAuth";
 import Input from "../atoms/Authentication/Input";
 import PasswordInput from "../atoms/Authentication/PasswordInput";
 import RedInputBtn from "../atoms/RedInputBtn";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import "./css/login.css";
 import { useAuth } from "../../context/auth/useAuth";
+import { useAlert } from "../../context/alert/useAlert";
+import AlertBox from "../../context/alert/AlertBox";
+
+/****** Interfaces *******/
 
 interface UserData {
   email: string;
   password: string;
 }
+
 interface ErrorMessages {
   email: string;
   password: string;
@@ -28,12 +33,7 @@ interface SigninState {
   borderColor: BorderColor;
 }
 
-type Action =
-  | { type: "UPDATE_FIELD"; field: keyof UserData; value: string }
-  | { type: "SET_ERROR"; field: keyof ErrorMessages; value: string }
-  | { type: "SET_BORDER_COLOR"; field: keyof BorderColor; value: string }
-  | { type: "RESET_ERRORS" }
-  | { type: "RESET_FORM" };
+/****** Reducer and Initial State *******/
 
 const initialState: SigninState = {
   userData: {
@@ -49,6 +49,13 @@ const initialState: SigninState = {
     password: "gray",
   },
 };
+
+type Action =
+  | { type: "UPDATE_FIELD"; field: keyof UserData; value: string }
+  | { type: "SET_ERROR"; field: keyof ErrorMessages; value: string }
+  | { type: "SET_BORDER_COLOR"; field: keyof BorderColor; value: string }
+  | { type: "RESET_ERRORS" }
+  | { type: "RESET_FORM" };
 
 const reducerLogin = (state: SigninState, action: Action): SigninState => {
   switch (action.type) {
@@ -76,36 +83,73 @@ const reducerLogin = (state: SigninState, action: Action): SigninState => {
         errorMessage: initialState.errorMessage,
         borderColor: initialState.borderColor,
       };
+
     case "RESET_FORM":
       return initialState;
+
     default:
       return state;
   }
 };
 
-const Login = () => {
+/****** Login Component *******/
+
+const Login: React.FC = () => {
+  const location = useLocation();
+  const { alert, showAlert } = useAlert();
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [state, dispatch] = useReducer(reducerLogin, initialState);
 
+  // Add a loading state to handle the button state
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (
+      location.state?.alertType &&
+      location.state?.alertTitle &&
+      location.state?.alertDescription
+    ) {
+      showAlert(
+        location.state.alertType,
+        location.state.alertTitle,
+        location.state.alertDescription
+      );
+    }
+  }, [location.state]);
+
+  const [state, dispatch] = useReducer(reducerLogin, initialState);
   const { userData, errorMessage, borderColor } = state;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    dispatch({
+      type: "SET_ERROR",
+      field: name as keyof ErrorMessages,
+      value: "",
+    });
+    dispatch({
+      type: "SET_BORDER_COLOR",
+      field: name as keyof BorderColor,
+      value: "gray",
+    });
     dispatch({
       type: "UPDATE_FIELD",
-      field: e.target.name as keyof UserData,
-      value: e.target.value,
+      field: name as keyof UserData,
+      value: name === "email" ? value.toLowerCase() : value,
     });
   };
 
   let flagErr: boolean = false;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).*$/;
     dispatch({ type: "RESET_ERRORS" });
 
+    setLoading(true); // Set loading to true when submitting
+
+    /****** Validation *******/
     if (!userData.email) {
       dispatch({
         type: "SET_ERROR",
@@ -135,6 +179,7 @@ const Login = () => {
       });
       flagErr = true;
     }
+
     if (userData.password.length < 8) {
       dispatch({
         type: "SET_ERROR",
@@ -149,53 +194,65 @@ const Login = () => {
       flagErr = true;
     }
 
-    if (flagErr) return;
+    if (flagErr) {
+      setLoading(false); // Stop loading if there are errors
+      return;
+    }
+
+    /****** Authenticate with LocalStorage *******/
+
     try {
-      const resp = await axios.post(
-        "https://car-rental-server-vh0t.onrender.com/api/v1/auth/sign-in",
-        {
-          email: userData.email,
-          password: userData.password,
-        }
+      const usersDataKey = "usersData"; // Key for localStorage
+      const existingUsers = JSON.parse(
+        localStorage.getItem(usersDataKey) || "[]"
       );
-      const loginData = {
-        username: resp.data.username,
-        userId: resp.data.userId,
-        role: resp.data.role,
-      };
-      login(loginData);
-      console.log(resp);
+
+      // Find the user with matching email
+      const user = existingUsers.find(
+        (u: { email: string; password: string }) =>
+          u.email === userData.email.toLowerCase() &&
+          u.password === userData.password
+      );
+
+      if (!user) {
+        // If no user matches, show error
+        dispatch({
+          type: "SET_ERROR",
+          field: "email",
+          value: "Invalid email or password.",
+        });
+        dispatch({
+          type: "SET_BORDER_COLOR",
+          field: "email",
+          value: "red",
+        });
+        dispatch({
+          type: "SET_ERROR",
+          field: "password",
+          value: "Invalid email or password.",
+        });
+        dispatch({
+          type: "SET_BORDER_COLOR",
+          field: "password",
+          value: "red",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // If login successful, save session and navigate
+      login({
+        username: `${user.firstName} ${user.lastName}`,
+        userId: Math.random().toString(36).substring(2, 15), // Random user ID
+        role: "Client", // Placeholder role
+      });
+
       dispatch({ type: "RESET_FORM" });
       navigate("/");
-      // alert("Login Successfull");
-    } catch (err: any) {
-      console.log(err.response);
-      if (err.response.status === 409) {
-        dispatch({
-          type: "SET_ERROR",
-          field: "email",
-          value: "Email not registered",
-        });
-        dispatch({
-          type: "SET_BORDER_COLOR",
-          field: "email",
-          value: "red",
-        });
-      } else if (err.response.status === 410) {
-        dispatch({
-          type: "SET_ERROR",
-          field: "password",
-          value: "The password isn't correct. Check it and try again.",
-        });
-        dispatch({
-          type: "SET_BORDER_COLOR",
-          field: "password",
-          value: "red",
-        });
-      } else {
-        alert("An error occurred during registration.");
-        console.error(err);
-      }
+      setLoading(false); // Stop loading after success
+    } catch (err) {
+      console.error("Error during login:", err);
+      setLoading(false);
     }
   };
 
@@ -204,6 +261,7 @@ const Login = () => {
       <ImageAuth />
 
       <div className="login-right">
+        {alert && <AlertBox alert={alert} />}
         <div id="head-log-in">Log in</div>
         <p className="text">Glad to see you again</p>
         <form onSubmit={handleSubmit} id="login-form">
@@ -238,7 +296,13 @@ const Login = () => {
             )}
 
             <div className="form-group">
-              <RedInputBtn value="Login" type="submit" />
+              <RedInputBtn type="submit" disabled={loading}>
+                {loading ? (
+                  <span className="loading-text">Loading</span>
+                ) : (
+                  "Login"
+                )}
+              </RedInputBtn>
             </div>
 
             <div id="signup-btn">
